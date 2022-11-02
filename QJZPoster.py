@@ -5,6 +5,7 @@ Created on Mon Mar 23 21:37:13 2020
 
 @author: KakaHiguain@BDWM
 """
+version = "20221103"
 
 import base64
 import getpass
@@ -26,7 +27,6 @@ class QJZPoster:
     _WMREVIEW_COLLECTION_PATH = 'groups/GROUP_0/WMReview/D5448A5D2'
     _INITIALIZE_FILE = os.path.join(os.path.dirname(__file__), '.initialized')
     _MAXIMUM_TITLE_LENGTH = 20
-    _version = "20221101"  # 更新时务必修改这里
 
     def __init__(self):
         print(bold_string('Hi, 欢迎使用全自动机器人起居注主编~~'))
@@ -53,7 +53,7 @@ class QJZPoster:
             raise e
         
         #自动更新程序
-        update(password,self._version)
+        update(self._bdwm,version)
 
         self._year, self._month, self._day = \
             self._date[:4], self._date[4:6], self._date[6:]
