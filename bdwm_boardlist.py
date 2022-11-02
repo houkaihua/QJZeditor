@@ -5,6 +5,9 @@ from bs4 import BeautifulSoup
 import requests
 from BDWM import BDWM
 import getpass
+import os
+import base64
+import sys
 
 #admin0-9 ABCG https://bbs.pku.edu.cn/v2/board.php?bid={xxx}
 boards_bid=[
@@ -26,16 +29,47 @@ boards_bid=[
     "688"   #G区目录
     ]
 
+def get_decoded_password(file):
+    """read password and decode it"""
+    if not os.path.exists(file):
+        return None
+    with open(file, 'r') as f:
+        encoded_password = f.read()
+    return base64.b64decode(encoded_password.encode()).decode()
+
+def write_encoded_password(password, file):
+    """encode password and write it"""
+    encoded_password = base64.b64encode(password.encode()).decode()
+    os.makedirs(os.path.dirname(file), exist_ok=True)
+    with open(file, 'w') as f:
+        f.write(encoded_password)
+
+
 boardlists_dic = {"BBShelp":"0 0"}
 
-userid =input("请输入BBS帐号(推荐使用WMMZ)：")
-password = getpass.getpass("请输入密码(不会显示)：")
+#pyinstaller 打包时获取正确路径 支持py+exe
+base_path = ""
+if getattr(sys, 'frozen', False):  # 判断sys中是否存在frozen变量,
+    base_path = os.path.dirname(sys.executable)
+else:
+    base_path = os.path.dirname(__file__)
+
+#支持读取token
+password_file = os.path.join(base_path, '.token', 'token')
+password = get_decoded_password(password_file)
+if not password:
+    password = getpass.getpass("请输入WMWZ的密码(不会显示)：")
+    # Store encoded password in a file, to avoid inputting password every time.
+    write_encoded_password(password, password_file)
+
+#登录WMWZ并建立session
 try:
-    bdwm = BDWM('WMWZ', password)
+    bdwm = BDWM('WMWZ',password)
 except BDWM.RequestError as e:
     # If failing to login, remove wrong password file.
-    print("password error")
+    os.remove(password_file)
     raise e
+        
 
 ## 使用高权限帐号获取所有版面目录
 for i in range(0,len(boards_bid)):

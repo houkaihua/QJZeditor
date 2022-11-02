@@ -17,6 +17,7 @@ from QJZCrawler import QJZCrawler
 from QJZEditor_2_3_1_py3k import main as editor_main
 from utils import bold_string, bold_green, bold_red, bold_yellow, wrap_separate_bar, \
     get_QJZ_date, get_editors_info, initialize
+from update import main as update
 
 
 class QJZPoster:
@@ -25,6 +26,7 @@ class QJZPoster:
     _WMREVIEW_COLLECTION_PATH = 'groups/GROUP_0/WMReview/D5448A5D2'
     _INITIALIZE_FILE = os.path.join(os.path.dirname(__file__), '.initialized')
     _MAXIMUM_TITLE_LENGTH = 20
+    _version = "20221101"  # 更新时务必修改这里
 
     def __init__(self):
         print(bold_string('Hi, 欢迎使用全自动机器人起居注主编~~'))
@@ -44,12 +46,15 @@ class QJZPoster:
             self._write_encoded_password(password, password_file)
 
         try:
-            self._bdwm = BDWM('WMWZ', password)
+            self._bdwm = BDWM('WMWZ',password)
         except BDWM.RequestError as e:
             # If failing to login, remove wrong password file.
             os.remove(password_file)
             raise e
         
+        #自动更新程序
+        update(password,self._version)
+
         self._year, self._month, self._day = \
             self._date[:4], self._date[4:6], self._date[6:]
         self._title = '未名起居注 {}年{}月{}日'.format(
