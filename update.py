@@ -15,11 +15,12 @@ def WriteRestartCmd(zip_name):
         base_path = os.path.dirname(__file__)
 
     b = open("upgrade.bat",'w')
-    TempList = "@echo off\n";                             # 关闭bat脚本的输出
-    TempList += "timeout /t 3\n"                          # 等待3秒 方便覆盖旧程序（3秒后程序已运行结束，不延时的话，会提示被占用，无法覆盖）
-    TempList += "copy /B "+ zip_name +" QJZPoster.zip\n"  # 合并所有分卷压缩文件
-    TempList += "unzip -o QJZPoster.zip -x unzip.exe\n"   # 解压缩文件并覆盖
-    TempList += "start QJZPoster.exe"                     # 启动新程序
+    TempList = "@echo off\n";                                  # 关闭bat脚本的输出
+    TempList += "timeout /t 3\n"                               # 等待3秒 方便覆盖旧程序（3秒后程序已运行结束，不延时的话，会提示被占用，无法覆盖）
+    TempList += "copy /B "+ zip_name +" QJZeditor_exe.zip\n"   # 合并所有分卷压缩文件
+    TempList += "unzip -o QJZeditor_exe.zip -x unzip.exe\n"    # 解压缩文件并覆盖
+    TempList += "del QJZeditor_exe.zi*\n"                      # 删除下载缓存
+    TempList += "start QJZPoster.exe"                          # 启动新程序
     b.write(TempList)
     b.close()
 
